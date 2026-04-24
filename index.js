@@ -47,19 +47,15 @@ const stripLeadingSlash = value => value.startsWith('/') ? value.slice(1) : valu
  * @returns {string}
  */
 const getBundleAssetKey = (href, base) => {
-  let assetKey = stripLeadingSlash(href)
-
   if (!base || base === '/') {
-    return assetKey
+    return stripLeadingSlash(href)
   }
 
-  const normalizedBase = stripLeadingSlash(base)
-
-  if (normalizedBase && assetKey.startsWith(normalizedBase)) {
-    assetKey = stripLeadingSlash(assetKey.slice(normalizedBase.length))
+  if (href.startsWith(base)) {
+    return stripLeadingSlash(href.slice(base.length))
   }
 
-  return assetKey
+  return stripLeadingSlash(href)
 }
 
 /**
