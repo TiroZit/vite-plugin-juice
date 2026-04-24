@@ -36,6 +36,33 @@ const findAllNodes = (node, predicate, results = []) => {
 }
 
 /**
+ * @param {string} value
+ * @returns {string}
+ */
+const stripLeadingSlash = value => value.startsWith('/') ? value.slice(1) : value
+
+/**
+ * @param {string} href
+ * @param {string} base
+ * @returns {string}
+ */
+const getBundleAssetKey = (href, base) => {
+  let assetKey = stripLeadingSlash(href)
+
+  if (!base || base === '/') {
+    return assetKey
+  }
+
+  const normalizedBase = stripLeadingSlash(base)
+
+  if (normalizedBase && assetKey.startsWith(normalizedBase)) {
+    assetKey = stripLeadingSlash(assetKey.slice(normalizedBase.length))
+  }
+
+  return assetKey
+}
+
+/**
  * @param {import('@vituum/vite-plugin-juice/types').PluginUserConfig} pluginOptions
  * @returns {import('vite').Plugin}
  */
@@ -85,7 +112,8 @@ const plugin = (pluginOptions = {}) => {
               }
             }
             else {
-              const asset = bundle[href.startsWith('/') ? href.slice(1) : href]
+              const assetKey = getBundleAssetKey(href, resolvedConfig.base)
+              const asset = bundle[assetKey]
               const bundledCss = asset && 'source' in asset ? asset.source : undefined
 
               if (bundledCss) {
